@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+			
+<mapper namespace="BookMapper">
+	<!-- 검색 조건문 -->
+	<sql id="criteria">
+		<trim prefix="AND (" suffix=")" prefixOverrides="OR">
+			<foreach collection="typeArr" item="type">
+				<trim prefix="OR">
+					<choose>
+						<when test="type=='T'.toString()">
+							title like '%'||#{keyword}||'%'
+						</when>
+						<when test="type=='A'.toString()">
+							author like '%'||#{keyword}||'%'
+						</when>
+						<when test="type=='P'.toString()">
+							publisher like '%'||#{keyword}||'%'
+						</when>
+						<when test="type=='C'.toString()">
+							bookCate = #{cateCode}
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim>
+	</sql>
+	
+	<!-- 책 저장 -->
+	<insert id="insertBook">
+		<![CDATA[
+			INSERT INTO Book(bookId, title, bookImage, author, publisher, bookIntro, bookCate, fullPrice, bookStock, discountPer, regDate, updateDate)
+			VALUES(#{bookId}, #{title}, #{bookImage, jdbcType=VARCHAR}, #{author}, #{publisher}, #{bookIntro, jdbcType=VARCHAR}, #{bookCate}, #{fullPrice}, #{bookStock}, #{discountPer, jdbcType=INTEGER}, SYSDATE, null)
+		]]>
+	</insert>
+	
+	<!-- 책  검색 -->
+	<select id="getBookById" resultType="bookVO">
+		<!-- select * from book where bookId = #{bookId} -->
+		<![CDATA[
+			select b.*, c.cateName bookCateName from book b 
+			left outer join  bcate c on (b.bookcate = c.catecode) where bookId = #{bookId}				
+		]]>
+	</select>
+	
+	<!-- 책 목록 가져오기 -->
+	<select id="getBookList" resultType="bookVO">
+		<![CDATA[
+			select * from (
+				select /*+ INDEX_DESC(b book_ix02)*/ rownum as rn, b.*,
+				(select cateName from bCate c where b.bookCate = c.catecode) as bookCateName
+				from  book b where rownum <= #{pageNum} * #{amount} 
+		]]>
+			<if test="keyword != null || cateCode != null">
+				<include refid="criteria"></include>
+			</if>
+		<![CDATA[
+			)
+			where rn > (#{pageNum} - 1) * #{amount}
+		]]>
+	</select>
+
+	<!-- 별점 순으로 책 목록 가져오기  -->
+	<select id="getLikeBookList" resultType="bookVO">
+		<![CDATA[
+			select * from (
+				select rownum as rn, b.*,
+				(select cateName from bCate c where b.bookCate = c.catecode) as bookCateName
+				from (select * from book order by ratingAvg desc, regdate desc) b where rownum <= #{pageNum} * #{amount}
+			) where rn > (#{pageNum} - 1) * #{amount}
+		]]>
+	</select>
+	
+	<!-- 전체 상품 갯수 -->
+	<select id="getTotal" resultType="int">
+		<![CDATA[
+			select count(*) from book
+		]]>
+		<if test="keyword != null || cateCode != null">
+			where bookStock >= 0 <include refid="criteria"></include>
+		</if>
+	</select>
+	
+	<!-- 책 정보 수정 -->
+	<update id="updateBook">
+		<![CDATA[
+			update book set bookcate=#{bookCate}, bookStock=#{bookStock}, discountPer=#{discountPer}, updateDate=SYSDATE
+			where bookId = #{bookId}
+		]]>
+	</update>
+	
+	<delete id="deleteBook">
+		<![CDATA[
+			delete from book where bookId=#{bookId}	
+		]]>
+	</delete>
+	
+	<!-- 책 카테고리 리스트 -->
+	<select id="getCateList" resultType="bCateVO">
+		<![CDATA[
+			select * from bcate order by catecode
+		]]>
+	</select>
+
+</mapper>

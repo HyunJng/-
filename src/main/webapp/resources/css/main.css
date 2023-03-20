@@ -1,0 +1,113 @@
+@charset "UTF-8";
+
+#logo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.page_sub_header {
+	margin-top: 3px;
+	padding: 10px 10px;
+	border-top: 3px dashed #faf0e6;
+	border-bottom: 3px dashed #faf0e6;
+}
+
+/* 메인화면 */
+.main_title {
+	background-color: #f4a460;
+}
+
+#newest_list, #like_list {
+	position: relative;
+}
+
+#newest_list ul , #like_list ul{
+	list-style: none;
+	font-size: 0.9rem;
+}
+
+#newest_list a, #newest_list a:visited {
+	text-decoration: none;
+	color: black;
+}
+
+#newest_list a:hover {
+	color: #FFC0CB;
+}
+
+#newest_list div[class='next'], #like_list div[class='next'] {
+	position: absolute;
+	top: 45%;
+	right: 0;
+	align-items: center;
+}
+
+.main_book_li {
+	width: 17%;
+	margin-right: 30px;
+}
+
+.main_book_li img {
+	width: 100%;
+}
+
+.main_book_li div p {
+	margin-bottom: 5px;
+}
+
+.carousel_author {
+	width: inherit;
+	color: graytext;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.carousel_title {
+	font-weight: 600;
+}
+
+/* 헤더 */
+#header_div select[name='type'] {
+	display: inline-block;
+	width: 30% !important;
+}
+
+#header_div select, 
+#header_div select:focus, 
+#header_div input {
+	border: none !important;
+	outline: none !important;
+	box-shadow: none !important;
+}
+#header_div button:focus {
+	border: none;
+	outline: none;
+}
+
+/* search 페이지 */
+.table_empty {
+	width: 100%;
+	height: 300px;
+}
+
+.table_empty h5 {
+	margin: auto;
+}
+
+.rating_star {
+	color: #ffd700;
+}
+/* 책 상세 페이지 */
+#book_detail {
+	margin: auto 0;
+}
+
+#detail_quantity_btn button {
+	border: 1px solid grey;
+}
+
+#detail_quantity_btn input {
+	width: 50px;
+}
